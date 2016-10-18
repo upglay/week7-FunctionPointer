@@ -153,7 +153,8 @@ public:
 
 	void draw()
 	{
-		int radius_ = 30;
+		draw_surrounding_object();
+		
 		drawLine(center_x_ - (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ + (radius_ / 2));
 		drawLine(center_x_ + (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ - (radius_ / 2));
 		drawLine(center_x_ + (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ - (radius_ / 2));
@@ -168,11 +169,11 @@ public:
 		radius_ = r;
 	}
 
-	void(GeometricObject::*callback_)(void) = nullptr;
+	void(GeometricObject::*draw_surrounding_object_callback)(void) = nullptr;
 
-	void exe()
+	void draw_surrounding_object()
 	{
-		(this->*callback_)();
+		(this->*draw_surrounding_object_callback)();
 	}
 	//virtual void draw(void) = 0;
 
@@ -208,11 +209,10 @@ public:
 
 	void drawBox()
 	{
-
-		drawLine(center_x_ - (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ + (radius_ / 2));
-		drawLine(center_x_ + (radius_ / 2), center_y_ + (radius_ / 2), center_x_ + (radius_ / 2), center_y_ - (radius_ / 2));
-		drawLine(center_x_ + (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ - (radius_ / 2));
-		drawLine(center_x_ - (radius_ / 2), center_y_ - (radius_ / 2), center_x_ - (radius_ / 2), center_y_ + (radius_ / 2));
+		drawLine(center_x_ - radius_, center_y_ + radius_, center_x_ + radius_, center_y_ + radius_);
+		drawLine(center_x_ + radius_, center_y_ + radius_, center_x_ + radius_, center_y_ - radius_);
+		drawLine(center_x_ + radius_, center_y_ - radius_, center_x_ - radius_, center_y_ - radius_);
+		drawLine(center_x_ - radius_, center_y_ - radius_, center_x_ - radius_, center_y_ + radius_);
 	}
 
 	void drawLine(const int& i0, const int& j0, const int& i1, const int& j1)
@@ -274,11 +274,11 @@ public:
 
 		if (type_name == "Box")
 		{
-			new_ob->callback_ = &GeometricObject::drawBox;
+			new_ob->draw_surrounding_object_callback = &GeometricObject::drawBox;
 		}
 		else if (type_name == "Circle")
 		{
-			new_ob->callback_ = &GeometricObject::drawCircle;
+			new_ob->draw_surrounding_object_callback = &GeometricObject::drawCircle;
 		}
 		else
 		{
@@ -307,7 +307,7 @@ int main()
 	geo_vector.push_back(GeometricObject::getPointer("Box"));
 	geo_vector.push_back(GeometricObject::getPointer("Circle"));
 
-	geo_vector[0]->init(100, 100, 100);
+	geo_vector[0]->init(100, 100, 50);
 	geo_vector[1]->init(300, 100, 50);
 
 	if (!glfwInit())
@@ -330,7 +330,6 @@ int main()
 		//draw circle and square
 		for (auto itr : geo_vector)
 		{
-			itr->exe();
 			itr->draw();
 		}
 
